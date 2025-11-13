@@ -33,12 +33,6 @@ jobs:
           jq --arg version "${{ steps.version.outputs.version }}" '.KPlugin.Version = $version' metadata.json > "$tmp" && mv "$tmp" metadata.json
           cd ..
 
-      - name: Upload versioned metadata
-        uses: actions/upload-artifact@v4
-        with:
-          name: metadata
-          path: package/metadata.json
-
   release:
     needs: package
     if: github.event_name == 'release'
@@ -47,26 +41,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download metadata.json
-        uses: actions/download-artifact@v4
-        with:
-          name: metadata
-          path: .
+      - name: Get version from metadata.json
+        id: get_version
+        run: |
+          VERSION=$(jq -r '.KPlugin.Version' package/metadata.json)
+          echo "Using version from metadata.json: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_ENV
 
       - name: Check if version is already released
         id: check_version
         run: |
-          VERSION=$(jq -r '.KPlugin.Version' package/metadata.json)
-          echo "Checking if version $VERSION has been released already..."
-
-          # Use the GitHub API to check if the version is already in the release notes
+          echo "Checking if version $VERSION already exists..."
+          
+          # Use GitHub API to check if this version is already released
           existing_release=$(gh release view "v$VERSION" --json tagName -q ".tagName")
 
           if [[ "$existing_release" == "v$VERSION" ]]; then
             echo "Release for version $VERSION already exists. Skipping upload."
             exit 0
           else
-            echo "Version $VERSION is new. Proceeding with the release."
+            echo "Version $VERSION is new. Proceeding with release."
           fi
 
       - name: Create .plasmoid package
