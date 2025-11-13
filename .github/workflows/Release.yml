@@ -39,16 +39,16 @@ jobs:
           cd package
           plasmoid_id=$(jq -r '.KPlugin.Id' metadata.json)
           version=$(jq -r '.KPlugin.Version' metadata.json)
-          zip -r "../dist/${plasmoid_id}-${version}.plasmoid" .
+          zip -r "../dist/homeassistant-plasmoid-${version}.plasmoid" .
           cd ..
-          echo "Created dist/${plasmoid_id}-${version}.plasmoid"
+          echo "Created dist/homeassistant-plasmoid-${version}.plasmoid"
 
       - name: Create GitHub Release
         if: env.exists == 'false'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ env.version }}
-          name: "homeassistant-plasmoid-v${{ env.version }}"
+          name: "v${{ env.version }}"
           body: "Automated release of version ${{ env.version }}"
           files: "dist/*.plasmoid"
         env:
