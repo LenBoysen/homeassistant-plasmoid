@@ -1,4 +1,4 @@
-# homeassistant-plasmoid
+# Home Assistant plasmoid
 
 ### Widget
 
