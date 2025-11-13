@@ -1,5 +1,8 @@
 name: Package and Release Plasma Widget
 
+permissions:
+  contents: write
+
 on:
   push:
     branches: [ main ]
