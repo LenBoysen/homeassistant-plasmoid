@@ -1,11 +1,8 @@
-name: Package Plasma Widget
+name: Package and Release Plasma Widget
 
 on:
   push:
     branches: [ main ]
-  pull_request:
-  release:
-    types: [created]
 
 jobs:
   package:
@@ -15,52 +12,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Get version
+      - name: Get version from metadata.json
         id: version
         run: |
-          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            VERSION="${GITHUB_REF#refs/tags/}"
-          else
-            VERSION="0.0.0+$(git rev-parse --short HEAD)"
-          fi
-          echo "version=${VERSION}" >> $GITHUB_OUTPUT
-          echo "Using version: ${VERSION}"
-
-      - name: Inject version into metadata.json
-        run: |
-          cd package
-          tmp=$(mktemp)
-          jq --arg version "${{ steps.version.outputs.version }}" '.KPlugin.Version = $version' metadata.json > "$tmp" && mv "$tmp" metadata.json
-          cd ..
-
-  release:
-    needs: package
-    if: github.event_name == 'release'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Get version from metadata.json
-        id: get_version
-        run: |
           VERSION=$(jq -r '.KPlugin.Version' package/metadata.json)
-          echo "Using version from metadata.json: $VERSION"
           echo "version=$VERSION" >> $GITHUB_ENV
+          echo "Version: $VERSION"
 
-      - name: Check if version is already released
-        id: check_version
+      - name: Check if tag already exists
+        id: check_tag
         run: |
-          echo "Checking if version $VERSION already exists..."
-          
-          # Use GitHub API to check if this version is already released
-          existing_release=$(gh release view "v$VERSION" --json tagName -q ".tagName")
-
-          if [[ "$existing_release" == "v$VERSION" ]]; then
-            echo "Release for version $VERSION already exists. Skipping upload."
-            exit 0
+          if git rev-parse "v${VERSION}" >/dev/null 2>&1; then
+            echo "Tag v${VERSION} already exists. Skipping release."
+            echo "exists=true" >> $GITHUB_ENV
           else
-            echo "Version $VERSION is new. Proceeding with release."
+            echo "Tag v${VERSION} does not exist."
+            echo "exists=false" >> $GITHUB_ENV
           fi
 
       - name: Create .plasmoid package
@@ -73,9 +40,13 @@ jobs:
           cd ..
           echo "Created dist/${plasmoid_id}-${version}.plasmoid"
 
-      - name: Upload to GitHub Release
+      - name: Create GitHub Release
+        if: env.exists == 'false'
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: v${{ env.version }}
+          name: "Home Assistant Widget v${{ env.version }}"
+          body: "Automated release of version ${{ env.version }}"
           files: "dist/*.plasmoid"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
