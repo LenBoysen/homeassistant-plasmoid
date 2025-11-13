@@ -1,0 +1,24 @@
+{
+	"KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "len.boysen@gmail.com",
+                "Name": "Lennard Boysen"
+            }
+        ],
+        "Category": "Online Services",
+        "Description": "Control your Home Assistant from the desktop.",
+        "Icon": "applications-system",
+        "Id": "com.github.lenboysen.hasswidget",
+        "License": "GPLv3",
+        "Name": "Home Assistant",
+        "Version": "0.1.0",
+        "Website": "https://github.com/LenBoysen/homeassistant-plasmoid"
+    },
+    "X-KDE-ParentApp": "",
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-MainScript": "ui/main.qml",
+    "X-Plasma-RemoteLocation": ""
+
+}
