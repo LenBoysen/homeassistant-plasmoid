@@ -1,0 +1,87 @@
+name: Package Plasma Widget
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  release:
+    types: [created]
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get version
+        id: version
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            VERSION="${GITHUB_REF#refs/tags/}"
+          else
+            VERSION="0.0.0+$(git rev-parse --short HEAD)"
+          fi
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Using version: ${VERSION}"
+
+      - name: Inject version into metadata.json
+        run: |
+          cd package
+          tmp=$(mktemp)
+          jq --arg version "${{ steps.version.outputs.version }}" '.KPlugin.Version = $version' metadata.json > "$tmp" && mv "$tmp" metadata.json
+          cd ..
+
+      - name: Upload versioned metadata
+        uses: actions/upload-artifact@v4
+        with:
+          name: metadata
+          path: package/metadata.json
+
+  release:
+    needs: package
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download metadata.json
+        uses: actions/download-artifact@v4
+        with:
+          name: metadata
+          path: .
+
+      - name: Check if version is already released
+        id: check_version
+        run: |
+          VERSION=$(jq -r '.KPlugin.Version' package/metadata.json)
+          echo "Checking if version $VERSION has been released already..."
+
+          # Use the GitHub API to check if the version is already in the release notes
+          existing_release=$(gh release view "v$VERSION" --json tagName -q ".tagName")
+
+          if [[ "$existing_release" == "v$VERSION" ]]; then
+            echo "Release for version $VERSION already exists. Skipping upload."
+            exit 0
+          else
+            echo "Version $VERSION is new. Proceeding with the release."
+          fi
+
+      - name: Create .plasmoid package
+        run: |
+          mkdir -p dist
+          cd package
+          plasmoid_id=$(jq -r '.KPlugin.Id' metadata.json)
+          version=$(jq -r '.KPlugin.Version' metadata.json)
+          zip -r "../dist/${plasmoid_id}-${version}.plasmoid" .
+          cd ..
+          echo "Created dist/${plasmoid_id}-${version}.plasmoid"
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: "dist/*.plasmoid"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
