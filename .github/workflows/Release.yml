@@ -48,7 +48,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ env.version }}
-          name: "Home Assistant Widget v${{ env.version }}"
+          name: "homeassistant-plasmoid-v${{ env.version }}"
           body: "Automated release of version ${{ env.version }}"
           files: "dist/*.plasmoid"
         env:
