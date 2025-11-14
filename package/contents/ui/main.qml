@@ -34,7 +34,7 @@ PlasmoidItem {
             spacing: 0
             PlasmaComponents3.Label {
                 Layout.alignment: Qt.AlignCenter
-                text: Plasmoid.nativeText
+                text: "Home Assistant"
             }
             Repeater {
                 model: JSON.parse(selectedEntities)

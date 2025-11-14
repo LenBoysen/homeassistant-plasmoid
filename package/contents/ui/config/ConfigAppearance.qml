@@ -107,7 +107,7 @@ Kirigami.ScrollablePage {
             sourceModel: entityList
             sortRoleName: "text"                 // Sort alphabetically by text
             filterRoleName: "text"               // Filter by the same role
-            filterRegularExpression: RegExp("")  // Initially empty (show all)
+            filterRegularExpression: RegExp("^((light)|(switch))")  // Initially empty (show all)
         }
 
 
