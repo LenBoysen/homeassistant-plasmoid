@@ -24,7 +24,6 @@ PlasmoidItem {
     property string selectedEntities: plasmoid.configuration.selectedEntities
 
 
-    Plasmoid.icon: Qt.resolvedUrl("../hass.svg")
     ScrollView {
         anchors.fill: parent
 
