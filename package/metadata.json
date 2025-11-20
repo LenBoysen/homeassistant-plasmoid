@@ -10,7 +10,7 @@
         "Category": "Online Services",
         "Description": "Control your Home Assistant from the desktop.",
         "Icon": "applications-system",
-        "Id": "com.github.lenboysen.hasswidget",
+        "Id": "com.github.lenboysen.hasswidget.dev",
         "License": "GPLv3",
         "Name": "Home Assistant",
         "Version": "0.1.0",
