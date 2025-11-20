@@ -1,0 +1,4 @@
+CMakeLists.txt merge=ours
+.gitattributes merge=ours
+.gitignore merge=ours
+build/ merge=ours
