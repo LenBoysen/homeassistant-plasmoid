@@ -1,5 +1,39 @@
 # Home Assistant plasmoid
 
+
+## Get started
+### Setup
+Creates build environment. 
+```bash
+git clone https://github.com/LenBoysen/homeassistant-plasmoid.git
+cd homeassistant-plasmoid
+git checkout dev
+
+mkdir build -p
+cd build
+cmake -DCMAKE_INSTALL_PREFIX=/usr ..
+```
+### Run (from project folder)
+Previews sandbox for widget.
+```bash
+cd build
+make run
+```
+
+### Install
+Installs widget so KDE Plasma can use it.
+```bash
+cd build
+sudo make install
+```
+### Uninstall
+Deletes installed widget.
+```bash
+sudo rm -rf /usr/share/plasma/plasmoids/com.github.lenboysen.hasswidget
+```
+
+## Screenshots
+
 ### Widget
 
 ![Widget](widget.png)
