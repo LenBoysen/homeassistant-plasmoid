@@ -13,8 +13,7 @@ include(KDECompilerSettings NO_POLICY_SCOPE)
 find_package(Plasma REQUIRED)
 
 plasma_install_package(
-	package com.github.lenboysen.hasswidget2 
-	destination ${KDE_INSTALL_PLASMAPKGDIR}
+	package com.github.lenboysen.hasswidget.dev 
 )
 
 
