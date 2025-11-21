@@ -2,10 +2,13 @@
 
 
 ## Get started
-
 ### Setup
 Creates build environment. 
 ```bash
+git clone https://github.com/LenBoysen/homeassistant-plasmoid.git
+cd homeassistant-plasmoid
+git checkout dev
+
 mkdir build -p
 cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr ..
@@ -17,7 +20,7 @@ cd build
 make run
 ```
 
-### Installation
+### Install
 Installs widget so KDE Plasma can use it.
 ```bash
 cd build
