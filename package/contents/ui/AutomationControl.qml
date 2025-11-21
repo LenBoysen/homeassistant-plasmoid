@@ -1,12 +1,11 @@
-// LightControl.qml
+// AutomationControl.qml
 import QtQuick 2.15
 import QtWebSockets
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import "../code/backend.js" as Backend
 import org.kde.kirigami as Kirigami
-import org.kde.plasma.components as PlasmaComponents3
-
+import org.kde.plasma.components as PC3
 
 
 Item {
@@ -14,18 +13,20 @@ Item {
     // make it expand properly in ColumnLayout
     Layout.fillWidth: true
     //Layout.preferredHeight: content.childrenRect.height + 10
-    height: 40
+    height: 80
 
     property string haUrl: plasmoid.configuration.homeAssistantUrl
     property string bearerToken: plasmoid.configuration.bearerToken
 
-
+    property string value: ""
+    property string options: ""
     property string entityId: ""
     property string friendly_name: ""
     property bool isOn: false
     property real brightness: 255
-    property string value: ""
-
+    property int lastValue: 255
+    property int uiValue: 255
+    property bool waitingToSend: true
 
 
     onEntityIdChanged: {
@@ -38,7 +39,7 @@ Item {
 
         Backend.getState(entityId, function(resp) {
             if (!resp) {
-                console.error("getBrightness: No response for", entityId)
+                console.error("getState: No response for", entityId)
                 return
             }
             mySwitch.checked = resp.state == "on" ? true : false
@@ -46,12 +47,10 @@ Item {
         })
     }
 
-
     ColumnLayout {
         id: content
         anchors.left: parent.left
         anchors.right: parent.right
-        height: 40
         Kirigami.FormLayout {
             Kirigami.Separator {
                 Kirigami.FormData.isSection: true
@@ -66,7 +65,28 @@ Item {
             text: friendly_name
             onToggled: Backend.toggleEntity(entityId, checked)
         }
+		PC3.Button {
+			id: myButton2
+			text: "Trigger"
+			onClicked: Backend.trigger(entityId)
+		}
+        // Timer ensures we send max once every 0.5s
+        Timer {
+            id: sendDelay
+            interval: 200 // ms
+            repeat: true
+            running: false
+            onTriggered: {
+                sendDelay.stop()
+
+                waitingToSend = false
+                if(interval == 1500)
+                    interval = 200
+
+            }
+        }
     }
+
     WebSocket {
         id: haSocket
         url: haUrl.replace(/^http/, "ws") + "/api/websocket"
@@ -86,7 +106,6 @@ Item {
             }
         }
         function updateUIFromState(data, mySwitch) {
-            // Example: light brightness → slider
             if (data.entity_id.startsWith(entityId)) {
 				mySwitch.checked = data.state == "on" ? true : false
                 //sendDelay.start()
