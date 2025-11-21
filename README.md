@@ -29,7 +29,7 @@ sudo make install
 ### Uninstall
 Deletes installed widget.
 ```bash
-sudo rm -rf /usr/share/plasma/plasmoids/com.github.lenboysen.hasswidget.dev
+sudo rm -rf /usr/share/plasma/plasmoids/com.github.lenboysen.hasswidget
 ```
 
 ## Screenshots

@@ -10,10 +10,10 @@
         "Category": "Online Services",
         "Description": "Control your Home Assistant from the desktop.",
         "Icon": "applications-system",
-        "Id": "com.github.lenboysen.hasswidget.dev",
+        "Id": "com.github.lenboysen.hasswidget",
         "License": "GPLv3",
         "Name": "Home Assistant",
-        "Version": "0.1.0",
+        "Version": "0.1.1",
         "Website": "https://github.com/LenBoysen/homeassistant-plasmoid"
     },
     "X-KDE-ParentApp": "",

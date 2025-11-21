@@ -13,7 +13,7 @@ include(KDECompilerSettings NO_POLICY_SCOPE)
 find_package(Plasma REQUIRED)
 
 plasma_install_package(
-	package com.github.lenboysen.hasswidget.dev 
+	package com.github.lenboysen.hasswidget 
 )
 
 
@@ -21,5 +21,5 @@ add_custom_target(run
     COMMAND /usr/bin/plasmoidviewer --formfactor mediacenter
             -a package
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    COMMENT "Launching plasmoidviewer with hasswidget2..."
+    COMMENT "Launching plasmoidviewer with hasswidget..."
 )
