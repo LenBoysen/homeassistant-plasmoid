@@ -8,7 +8,7 @@ import org.kde.kirigami as Kirigami
 import org.kde.kitemmodels as KItemModels
 
 Kirigami.ScrollablePage {
-    readonly property alias cfg_lastSpace: lastSpace.value
+    readonly property alias cfg_showAll: showAllBool.checked
     property alias cfg_selectedEntities: selectedEntitiesString.text
     //property string cfg_selectedEntitiesf
 
@@ -67,14 +67,16 @@ Kirigami.ScrollablePage {
     Kirigami.FormLayout {
         Kirigami.Separator {
             Kirigami.FormData.isSection: true
-            Kirigami.FormData.label: "Text"
-        }
-        PC3.SpinBox {
-            id: lastSpace
-            Kirigami.FormData.label: i18n("Space after text:")
-            from: 0
-            to: 999
-        }
+            Kirigami.FormData.label: "Entities"
+		}
+		PC3.CheckBox {
+			id: showAllBool
+			checked: false
+            Kirigami.FormData.label: "Show unsuported"
+			onCheckedChanged: {
+				console.log("Checkbox is now", checked)
+			}
+		}
         Button {
             id: fetchButton
             Layout.preferredWidth: 300
@@ -107,8 +109,11 @@ Kirigami.ScrollablePage {
             sourceModel: entityList
             sortRoleName: "text"                 // Sort alphabetically by text
             filterRoleName: "text"               // Filter by the same role
-            filterRegularExpression: RegExp("^((light)|(switch))")  // Initially empty (show all)
-        }
+			// Dynamically update the filter based on the checkbox
+			filterRegularExpression: RegExp(
+				showAllBool.checked ? "" : "^((light)|(switch))"
+			)
+		}
 
 
 
