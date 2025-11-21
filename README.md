@@ -11,19 +11,23 @@ cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr ..
 ```
 ### Run (from project folder)
-Preview sandbox for widget.
+Previews sandbox for widget.
 ```bash
 cd build
 make run
 ```
 
 ### Installation
-So KDE Plasma can use it.
+Installs widget so KDE Plasma can use it.
 ```bash
 cd build
 sudo make install
 ```
-
+### Uninstall
+Deletes installed widget.
+```bash
+sudo rm -rf /usr/share/plasma/plasmoids/com.github.lenboysen.hasswidget.dev
+```
 
 ## Screenshots
 
