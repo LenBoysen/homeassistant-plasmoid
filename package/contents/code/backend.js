@@ -76,8 +76,11 @@ function setVolume(entityId, volume) {
         volume_level: volume
     }, function(resp) {})
 }
-
-
+// trigger Automation
+function trigger(entityId) {
+    const domain = entityId.split(".")[0]
+    sendRequest("POST", `/api/services/${domain}/trigger`, { entity_id: entityId }, function(resp) {})
+}
 // Scene or script activation
 function activate(entityId) {
     const domain = entityId.split(".")[0]

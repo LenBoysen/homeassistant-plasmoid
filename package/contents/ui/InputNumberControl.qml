@@ -1,11 +1,11 @@
-// LightControl.qml
+// InputNumberControl.qml
 import QtQuick 2.15
 import QtWebSockets
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import "../code/backend.js" as Backend
 import org.kde.kirigami as Kirigami
-import org.kde.plasma.components as PlasmaComponents3
+import org.kde.plasma.components as PC3
 
 
 Item {
@@ -36,14 +36,14 @@ Item {
         }
 
         console.log("EntityId set:", entityId)
-
-        Backend.getBrightness(entityId, function(value) {
-                mySlider.value = value == null ? 0 : value
-                mySwitch.checked = value == null ? false : true
-                waitingToSend = false
-                console.log("Fetched brightness for", entityId, "=", value)
-
-        })
+		Backend.getState(entityId, function(data) {
+			console.log(JSON.stringify(data))
+			mySlider.from = data.attributes.min
+			mySlider.to = data.attributes.max
+			mySlider.stepSize = data.attributes.step
+			mySlider.value = parseInt(data.state)
+			waitingToSend = false
+		})
     }
 
     ColumnLayout {
@@ -58,16 +58,11 @@ Item {
                 anchors.right: parent.right
             }
         }
-        Switch {
-            id: mySwitch
-            Layout.fillWidth: true
-            checked: false
-            text: friendly_name
-            onToggled: Backend.toggleEntity(entityId, checked)
-        }
+		Label {
+			text: friendly_name
+		}
 
-
-        PlasmaComponents3.Slider {
+        PC3.Slider {
             id: mySlider
             Layout.fillWidth: true
             //visible: isOn
@@ -79,7 +74,7 @@ Item {
             // internal state variable
             property bool userIsChanging: false
             property int userValue: value // will hold only user-set value
-            onPressedChanged: {
+            onPressedChanged: function(status) {
                 if (pressed) {
                     userIsChanging = true
                 } else {
@@ -91,8 +86,9 @@ Item {
                     if(userValue != lastValue){
                         lastValue = userValue
                         mySlider.value = userValue
-                        mySwitch.checked = userValue == 0 ? false : true
-                        Backend.setBrightness(entityId, value)
+						mySwitch.checked = userValue == 0 ? false : true
+						
+                        Backend.setInputNumber(entityId, value)
                         waitingToSend = true
                         console.log(entityId, "set value:", userValue)
                         sendDelay.interval = 1500
@@ -107,8 +103,7 @@ Item {
                     if(waitingToSend == false){
                         lastValue = userValue
                         mySlider.value = userValue
-                        mySwitch.checked = userValue == 0 ? false : true
-                        Backend.setBrightness(entityId, value)
+                        Backend.setInputNumber(entityId, value)
                         waitingToSend = true
                         console.log(entityId, "set value:", userValue)
                         sendDelay.start()
@@ -158,20 +153,14 @@ Item {
         }
         function updateUIFromState(data, mySlider) {
             // Example: light brightness → slider
-            if (data.entity_id.startsWith(entityId) && waitingToSend == false) {
-                const brightness = data.attributes.brightness
-                var waitingToSendtmp = waitingToSend
-                waitingToSend = true
-                if (brightness !== undefined) {
-                    mySlider.value = brightness == null ? 0 : brightness
-                    mySwitch.checked = brightness == null ? false : true
-                    console.log("From websocket set", entityId, "to", brightness)
-                } else {
-                    mySlider.value = data.state === "on" ? 255 : 0
-                    mySwitch.checked = data.state === "on" ? true : false
-                }
-                waitingToSend = waitingToSendtmp
-                //sendDelay.start()
+			if (data.entity_id.startsWith(entityId) && waitingToSend == false) {
+				waitingToSend = true
+				mySlider.from = data.attributes.min
+				mySlider.to = data.attributes.max
+				mySlider.stepSize = data.attributes.step
+				mySlider.value = parseInt(data.state)
+                waitingToSend = false
+                //sendDelay.start( 
             }
         }
         onTextMessageReceived: (message) => {

@@ -44,11 +44,11 @@ PlasmoidItem {
                     source: {
                         switch (entity.domain) {
                             case "light": return "LightControl.qml"
-                            case "switch": return "SwitchControl.qml"
+							case "switch":
+							case "input_boolean": return "SwitchControl.qml"
+                            case "automation": return "AutomationControl.qml"
                             case "input_number": return "InputNumberControl.qml"
                             case "input_select": return "InputSelectControl.qml"
-                            case "climate": return "ClimateControl.qml"
-                            case "cover": return "CoverControl.qml"
                             case "media_player": return "MediaPlayerControl.qml"
                             case "scene":
                             case "script": return "SceneButton.qml"

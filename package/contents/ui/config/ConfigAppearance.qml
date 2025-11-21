@@ -100,10 +100,9 @@ Kirigami.ScrollablePage {
         TextField {
             id: searchField
             Kirigami.FormData.label: "Search"
-            placeholderText: "Type to filter entities..."
-            onTextChanged: filteredModel.filterRegularExpression = RegExp(searchField.text, "i")
+            placeholderText: "Type to regex filter entities..."
+            //onTextChanged: filteredModel.filterRegularExpression = RegExp(searchField.text, "i")
         }
-
         KItemModels.KSortFilterProxyModel {
             id: filteredModel
             sourceModel: entityList
@@ -111,7 +110,13 @@ Kirigami.ScrollablePage {
             filterRoleName: "text"               // Filter by the same role
 			// Dynamically update the filter based on the checkbox
 			filterRegularExpression: RegExp(
-				showAllBool.checked ? "" : "^((light)|(switch))"
+				// require category match unless showAllBool is checked
+				(showAllBool.checked ? "" : "(?=.*^((light)|(switch)|(automation)|(script)|(scene)|(input_number)|(input_boolean)))") +
+				// require search match
+				"(?=.*" + searchField.text + ")" +
+				// match everything
+				".*",
+				"i"
 			)
 		}
 
