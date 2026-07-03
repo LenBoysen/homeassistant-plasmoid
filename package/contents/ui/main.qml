@@ -52,7 +52,7 @@ PlasmoidItem {
                             case "media_player": return "MediaPlayerControl.qml"
                             case "scene":
                             case "script": return "SceneButton.qml"
-                            default: return "SensorDisplay.qml"
+                            case "sensor": return "SensorDisplay.qml"
                         }
                     }
                     onLoaded: {
