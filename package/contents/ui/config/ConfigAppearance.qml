@@ -111,7 +111,7 @@ Kirigami.ScrollablePage {
 			// Dynamically update the filter based on the checkbox
 			filterRegularExpression: RegExp(
 				// require category match unless showAllBool is checked
-				(showAllBool.checked ? "" : "(?=.*^((light)|(switch)|(automation)|(script)|(scene)|(input_number)|(input_boolean)))") +
+				(showAllBool.checked ? "" : "(?=.*^((light)|(switch)|(automation)|(script)|(scene)|(input_number)|(input_boolean)|(sensor)))") +
 				// require search match
 				"(?=.*" + searchField.text + ")" +
 				// match everything
